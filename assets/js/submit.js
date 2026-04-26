@@ -89,14 +89,14 @@ const SubmitManager = (() => {
             <input id="start-date" type="date"
               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
             <input id="start-time" type="time" value="00:00"
-              class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+              class="w-35 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
           </div>
           <div class="flex gap-2 items-center">
             <span class="text-gray-400 text-sm flex-shrink-0">~</span>
             <input id="end-date" type="date"
               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
             <input id="end-time" type="time" value="23:59"
-              class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+              class="w-35 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
           </div>
         </div>
       </div>
@@ -215,7 +215,7 @@ const SubmitManager = (() => {
     container.innerHTML = saleItems.map((item, i) => `
       <div class="flex gap-2 mb-2 items-start">
         <div class="flex-1 space-y-1">
-          <input type="text" placeholder="세일 내용 (예: 전 메뉴)" value="${escapeHtml(item.description)}"
+          <input type="text" placeholder="행사 내용 (예: 전 메뉴)" value="${escapeHtml(item.description)}"
             oninput="SubmitManager.updateItem(${i},'description',this.value)"
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
           <input type="text" placeholder="할인율 (예: 30%, 1+1)" value="${escapeHtml(item.discount_rate)}"

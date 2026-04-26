@@ -12,7 +12,12 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>HoneyMap — 주변 꿀세일</title>
+  <link rel="icon" type="image/png" href="assets/imgs/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" />
+  <link rel="shortcut icon" href="assets/imgs/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/imgs/apple-touch-icon.png" />
+  <link rel="manifest" href="assets/imgs/site.webmanifest" />
+  <title>꿀맵 — 개꿀 할인과 행사 정보 지도</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script type="text/javascript"
@@ -58,9 +63,9 @@
   <!-- 행사 등록 팝업 -->
   <div id="submit-panel" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/50" onclick="closeSubmitPanel()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[85vh] flex flex-col">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between px-4 py-3 border-b flex-shrink-0">
-        <h2 class="text-lg font-bold">할인 정보 등록</h2>
+        <h2 class="text-lg font-bold">행사 정보 등록</h2>
         <button onclick="closeSubmitPanel()"
           class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,11 +79,8 @@
 
   <!-- FAB 버튼 -->
   <button onclick="openSubmitPanel()"
-    class="fixed bottom-6 right-4 z-20 bg-amber-400 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/>
-    </svg>
+    class="fixed bottom-6 right-4 z-20 bg-amber-400 text-white px-5 py-3 rounded-full shadow-lg font-bold text-sm whitespace-nowrap">
+    🍯 개꿀 행사 등록하기
   </button>
 
   <!-- 신고 모달 -->

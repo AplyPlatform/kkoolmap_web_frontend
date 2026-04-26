@@ -4,13 +4,16 @@ const AppState = (() => {
   let currentEventId    = null;
   let currentEvent      = null;
   let cachedCategories  = [];
+  let currentGroup      = [];
+  let currentGroupPage  = 0;
+  const GROUP_PAGE_SIZE = 5;
 
   async function init() {
     const cats = await fetchCategories();
     cachedCategories = cats;
     renderCategoryTabs(cats);
     SubmitManager.render(cats);
-    MapManager.init(showDetailPanel);
+    MapManager.init(showDetailPanel, showGroupPanel);
   }
 
   async function fetchCategories() {
@@ -125,11 +128,75 @@ const AppState = (() => {
     document.getElementById('detail-modal').classList.remove('hidden');
   }
 
+  // ── 동일 위치 그룹 패널 ──────────────────────────────────
+
+  function showGroupPanel(events) {
+    currentGroup     = events;
+    currentGroupPage = 0;
+    _renderGroupPanel();
+    document.getElementById('detail-modal').classList.remove('hidden');
+  }
+
+  function loadMoreGroup() {
+    currentGroupPage++;
+    _renderGroupPanel();
+  }
+
+  function selectGroupEvent(idx) {
+    const ev = currentGroup[idx];
+    if (ev) showDetailPanel(ev);
+  }
+
+  function _renderGroupPanel() {
+    const end     = (currentGroupPage + 1) * GROUP_PAGE_SIZE;
+    const showing = currentGroup.slice(0, end);
+    const hasMore = currentGroup.length > end;
+
+    document.getElementById('detail-content').innerHTML = `
+      <div class="mb-3 pr-8">
+        <p class="text-sm font-bold text-gray-800">📍 ${currentGroup[0].address}</p>
+        <p class="text-xs text-gray-400 mt-0.5">총 ${currentGroup.length}개 할인 행사</p>
+      </div>
+      <div class="space-y-2">
+        ${showing.map((ev, idx) => `
+          <div class="border border-gray-100 rounded-xl p-3 cursor-pointer hover:bg-amber-50 transition-colors"
+               onclick="AppState.selectGroupEvent(${idx})">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold text-gray-900 truncate">${ev.store_name}</p>
+                <span class="inline-block text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full mt-0.5">
+                  ${ev.category_custom || ev.category_name}
+                </span>
+              </div>
+              ${ev.is_expired
+                ? '<span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full flex-shrink-0 self-start">종료</span>'
+                : ''}
+            </div>
+            ${ev.sale_items && ev.sale_items.length ? `
+              <p class="text-sm font-bold text-amber-500 mt-1.5">${ev.sale_items[0].discount_rate}${ev.sale_items.length > 1 ? ` 외 ${ev.sale_items.length - 1}건` : ''}</p>
+            ` : ''}
+            <p class="text-xs text-gray-400 mt-1">${fmtDt(ev.start_date)} ~ ${fmtDt(ev.end_date)}</p>
+          </div>
+        `).join('')}
+      </div>
+      ${hasMore ? `
+        <button onclick="AppState.loadMoreGroup()"
+          class="w-full mt-3 text-sm text-amber-600 font-medium py-2.5 border border-amber-200 rounded-xl hover:bg-amber-50 transition-colors">
+          더보기 (${currentGroup.length - end}개 더)
+        </button>
+      ` : ''}
+    `;
+  }
+
   function getCurrentEventId() { return currentEventId; }
   function getCurrentEvent()   { return currentEvent; }
   function getCategories()     { return cachedCategories; }
 
-  return { init, loadEvents, reloadEvents, selectCategory, getCurrentEventId, getCurrentEvent, getCategories, showDetailPanel };
+  return {
+    init, loadEvents, reloadEvents, selectCategory,
+    getCurrentEventId, getCurrentEvent, getCategories,
+    showDetailPanel, showGroupPanel, loadMoreGroup, selectGroupEvent,
+  };
 })();
 
 // ── 전역 UI 함수 ──────────────────────────────────────────────
@@ -298,7 +365,7 @@ function showEditForm(password) {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       </button>
-      <h3 class="text-base font-bold text-gray-900">할인 정보 수정</h3>
+      <h3 class="text-base font-bold text-gray-900">행사 정보 수정</h3>
     </div>
     <p class="text-xs text-gray-500 mb-4">🏪 ${event.store_name} &nbsp;·&nbsp; ${event.address}</p>
 
@@ -476,7 +543,7 @@ async function submitEdit() {
 }
 
 async function deleteEvent() {
-  if (!confirm('이 할인 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) return;
+  if (!confirm('이 행사 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) return;
 
   const errEl = document.getElementById('edit-form-error');
   errEl.classList.add('hidden');

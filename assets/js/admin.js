@@ -1,6 +1,38 @@
 // web/assets/js/admin.js
 const Admin = (() => {
 
+  // ── 토큰 헬퍼 ────────────────────────────────────────────
+
+  const TOKEN_KEY = 'admin_token';
+
+  function getToken()    { return localStorage.getItem(TOKEN_KEY) || ''; }
+  function setToken(t)   { localStorage.setItem(TOKEN_KEY, t); }
+  function clearToken()  { localStorage.removeItem(TOKEN_KEY); }
+
+  function authHeaders() {
+    return {
+      'Content-Type':  'application/json',
+      'Authorization': 'Bearer ' + getToken(),
+    };
+  }
+
+  // 인증이 필요한 모든 fetch를 이 함수로 감싸 401 시 자동 로그아웃
+  async function adminFetch(url, options = {}) {
+    const res = await fetch(url, { ...options, headers: authHeaders() });
+    if (res.status === 401) {
+      clearToken();
+      showLoginScreen();
+      throw new Error('auth_expired');
+    }
+    return res;
+  }
+
+  function showLoginScreen() {
+    document.getElementById('admin-main').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('login-password').value = '';
+  }
+
   // ── 인증 ─────────────────────────────────────────────────
 
   async function login() {
@@ -11,12 +43,13 @@ const Admin = (() => {
 
     try {
       const res  = await fetch(API_BASE + 'api/admin/auth.php', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'login', username, password }),
+        body:    JSON.stringify({ action: 'login', username, password }),
       });
       const json = await res.json();
       if (json.success) {
+        setToken(json.data.token);
         showMain();
       } else {
         errEl.textContent = json.error;
@@ -29,14 +62,15 @@ const Admin = (() => {
   }
 
   async function logout() {
-    await fetch(API_BASE + 'api/admin/auth.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'logout' }),
-    });
-    document.getElementById('admin-main').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-    document.getElementById('login-password').value = '';
+    clearToken();
+    try {
+      await fetch(API_BASE + 'api/admin/auth.php', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ action: 'logout' }),
+      });
+    } catch {}
+    showLoginScreen();
   }
 
   function showMain() {
@@ -52,8 +86,8 @@ const Admin = (() => {
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.querySelectorAll('.admin-tab').forEach(btn => {
       const active = btn.dataset.tab === tab;
-      btn.classList.toggle('bg-white',    active);
-      btn.classList.toggle('shadow-sm',   active);
+      btn.classList.toggle('bg-white',       active);
+      btn.classList.toggle('shadow-sm',      active);
       btn.classList.toggle('text-amber-500', active);
       btn.classList.toggle('text-gray-600',  !active);
     });
@@ -69,7 +103,7 @@ const Admin = (() => {
     const el = document.getElementById('tab-dashboard');
     el.innerHTML = '<p class="text-gray-400 text-sm py-4">로딩 중...</p>';
     try {
-      const res  = await fetch(API_BASE + 'api/admin/stats.php');
+      const res  = await adminFetch(API_BASE + 'api/admin/stats.php');
       const json = await res.json();
       if (!json.success) { el.innerHTML = '<p class="text-red-500">통계 로드 실패</p>'; return; }
       const s = json.data;
@@ -112,8 +146,8 @@ const Admin = (() => {
           scales:  { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
         },
       });
-    } catch {
-      el.innerHTML = '<p class="text-red-500">통계를 불러오지 못했습니다.</p>';
+    } catch (e) {
+      if (e.message !== 'auth_expired') el.innerHTML = '<p class="text-red-500">통계를 불러오지 못했습니다.</p>';
     }
   }
 
@@ -144,7 +178,7 @@ const Admin = (() => {
     const status = document.getElementById('ev-status')?.value  || '';
     const params = new URLSearchParams({ search, status, page });
     try {
-      const res  = await fetch(`${API_BASE}api/admin/event.php?${params}`);
+      const res  = await adminFetch(`${API_BASE}api/admin/event.php?${params}`);
       const json = await res.json();
       if (!json.success) return;
       const { events, total } = json.data;
@@ -187,19 +221,19 @@ const Admin = (() => {
           <p class="text-xs text-gray-400 px-4 py-3 border-t">총 ${total}건</p>
         </div>
       `;
-    } catch {
-      document.getElementById('events-table-wrap').innerHTML = '<p class="text-red-500">목록을 불러오지 못했습니다.</p>';
+    } catch (e) {
+      if (e.message !== 'auth_expired') document.getElementById('events-table-wrap').innerHTML = '<p class="text-red-500">목록을 불러오지 못했습니다.</p>';
     }
   }
 
   async function deleteEvent(id) {
     if (!confirm('이 행사를 삭제하시겠습니까?')) return;
     try {
-      const res  = await fetch(`${API_BASE}api/admin/event.php?id=${id}`, { method: 'DELETE' });
+      const res  = await adminFetch(`${API_BASE}api/admin/event.php?id=${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) searchEvents();
       else alert(json.error);
-    } catch { alert('삭제 중 오류가 발생했습니다.'); }
+    } catch (e) { if (e.message !== 'auth_expired') alert('삭제 중 오류가 발생했습니다.'); }
   }
 
   // ── 신고 관리 ────────────────────────────────────────────
@@ -208,7 +242,7 @@ const Admin = (() => {
     const el = document.getElementById('tab-reports');
     el.innerHTML = '<p class="text-gray-400 text-sm py-4">로딩 중...</p>';
     try {
-      const res  = await fetch(API_BASE + 'api/admin/reports.php');
+      const res  = await adminFetch(API_BASE + 'api/admin/reports.php');
       const json = await res.json();
       if (!json.success) { el.innerHTML = '<p class="text-red-500">신고 목록 로드 실패</p>'; return; }
 
@@ -251,36 +285,34 @@ const Admin = (() => {
           </table>
         </div>
       `;
-    } catch {
-      el.innerHTML = '<p class="text-red-500">신고 목록을 불러오지 못했습니다.</p>';
+    } catch (e) {
+      if (e.message !== 'auth_expired') el.innerHTML = '<p class="text-red-500">신고 목록을 불러오지 못했습니다.</p>';
     }
   }
 
   async function resolveReport(reportId) {
     try {
-      const res  = await fetch(API_BASE + 'api/admin/reports.php', {
+      const res  = await adminFetch(API_BASE + 'api/admin/reports.php', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ report_id: reportId, action: 'resolve' }),
+        body:   JSON.stringify({ report_id: reportId, action: 'resolve' }),
       });
       const json = await res.json();
       if (json.success) loadReports();
       else alert(json.error);
-    } catch { alert('처리 중 오류가 발생했습니다.'); }
+    } catch (e) { if (e.message !== 'auth_expired') alert('처리 중 오류가 발생했습니다.'); }
   }
 
   async function deleteEventByReport(reportId) {
     if (!confirm('신고된 행사를 삭제하시겠습니까?')) return;
     try {
-      const res  = await fetch(API_BASE + 'api/admin/reports.php', {
+      const res  = await adminFetch(API_BASE + 'api/admin/reports.php', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ report_id: reportId, action: 'delete_event' }),
+        body:   JSON.stringify({ report_id: reportId, action: 'delete_event' }),
       });
       const json = await res.json();
       if (json.success) loadReports();
       else alert(json.error);
-    } catch { alert('삭제 중 오류가 발생했습니다.'); }
+    } catch (e) { if (e.message !== 'auth_expired') alert('삭제 중 오류가 발생했습니다.'); }
   }
 
   // ── 카테고리 관리 ────────────────────────────────────────
@@ -289,7 +321,7 @@ const Admin = (() => {
     const el = document.getElementById('tab-categories');
     el.innerHTML = '<p class="text-gray-400 text-sm py-4">로딩 중...</p>';
     try {
-      const res  = await fetch(API_BASE + 'api/admin/categories.php');
+      const res  = await adminFetch(API_BASE + 'api/admin/categories.php');
       const json = await res.json();
       if (!json.success) { el.innerHTML = '<p class="text-red-500">카테고리 로드 실패</p>'; return; }
 
@@ -331,8 +363,8 @@ const Admin = (() => {
           </table>
         </div>
       `;
-    } catch {
-      el.innerHTML = '<p class="text-red-500">카테고리를 불러오지 못했습니다.</p>';
+    } catch (e) {
+      if (e.message !== 'auth_expired') el.innerHTML = '<p class="text-red-500">카테고리를 불러오지 못했습니다.</p>';
     }
   }
 
@@ -341,38 +373,42 @@ const Admin = (() => {
     const name  = input?.value.trim();
     if (!name) { alert('카테고리명을 입력해주세요.'); return; }
     try {
-      const res  = await fetch(API_BASE + 'api/admin/categories.php', {
+      const res  = await adminFetch(API_BASE + 'api/admin/categories.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body:   JSON.stringify({ name }),
       });
       const json = await res.json();
       if (json.success) { if (input) input.value = ''; loadCategories(); }
       else alert(json.error);
-    } catch { alert('추가 중 오류가 발생했습니다.'); }
+    } catch (e) { if (e.message !== 'auth_expired') alert('추가 중 오류가 발생했습니다.'); }
   }
 
   async function deleteCategory(id) {
     if (!confirm('카테고리를 삭제하시겠습니까?\n해당 카테고리로 등록된 행사에 영향을 줄 수 있습니다.')) return;
     try {
-      const res  = await fetch(`${API_BASE}api/admin/categories.php?id=${id}`, { method: 'DELETE' });
+      const res  = await adminFetch(`${API_BASE}api/admin/categories.php?id=${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) loadCategories();
       else alert(json.error);
-    } catch { alert('삭제 중 오류가 발생했습니다.'); }
+    } catch (e) { if (e.message !== 'auth_expired') alert('삭제 중 오류가 발생했습니다.'); }
   }
 
-  // ── 세션 자동 확인 ───────────────────────────────────────
+  // ── 토큰 자동 확인 (페이지 로드 시) ──────────────────────
 
   async function checkSession() {
+    if (!getToken()) return; // 토큰 없으면 로그인 화면 유지
     try {
       const res  = await fetch(API_BASE + 'api/admin/auth.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'check' }),
+        method:  'POST',
+        headers: authHeaders(),
+        body:    JSON.stringify({ action: 'check' }),
       });
       const json = await res.json();
-      if (json.success) showMain();
+      if (json.success) {
+        showMain();
+      } else {
+        clearToken(); // 만료된 토큰 제거
+      }
     } catch {}
   }
 

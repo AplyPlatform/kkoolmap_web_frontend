@@ -4,6 +4,7 @@ const MapManager = (() => {
   let markers       = [];
   let debounceTimer = null;
   let onMarkerClick = null;
+  let onGroupClick  = null;
 
   const CATEGORY_COLORS = {
     1: '#ef4444', // 음식점
@@ -15,6 +16,8 @@ const MapManager = (() => {
     7: '#3b82f6', // 전자기기
     8: '#78716c', // 기타
   };
+
+  // ── 아이콘 ───────────────────────────────────────────────
 
   function markerIcon(event) {
     const color   = event.is_expired ? '#9ca3af' : (CATEGORY_COLORS[event.category_id] || '#f59e0b');
@@ -37,6 +40,30 @@ const MapManager = (() => {
     };
   }
 
+  // 동일 위치 다중 행사 마커 (할인율 + 카운트 배지)
+  function locationGroupIcon(rep, count) {
+    const color   = rep.is_expired ? '#9ca3af' : (CATEGORY_COLORS[rep.category_id] || '#f59e0b');
+    const opacity = rep.is_expired ? 0.55 : 1;
+    const catName = (rep.category_custom || rep.category_name || '').slice(0, 6);
+    const rate    = (rep.sale_items && rep.sale_items.length > 0)
+                      ? rep.sale_items[0].discount_rate.slice(0, 8)
+                      : '';
+    return {
+      content: `
+<div style="position:relative;text-align:center;opacity:${opacity};filter:drop-shadow(0 2px 4px rgba(0,0,0,0.28));">
+  <div style="background:${color};border-radius:8px;padding:4px 8px 5px;border:2px solid white;width:80px;box-sizing:border-box;line-height:1.25;position:relative;">
+    <div style="font-size:9px;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${catName}</div>
+    <div style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${rate}</div>
+    <div style="position:absolute;top:-9px;right:-9px;background:#ef4444;color:white;border-radius:9px;min-width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid white;padding:0 3px;line-height:1;box-sizing:border-box;">${count}</div>
+  </div>
+  <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:8px solid ${color};margin:0 auto;"></div>
+</div>`,
+      size:   new naver.maps.Size(92, 58),
+      anchor: new naver.maps.Point(46, 58),
+    };
+  }
+
+  // 광역 지리 클러스터 아이콘 (줌 아웃 시)
   function clusterIcon(count) {
     const bg = count >= 100 ? '#ef4444' : count >= 10 ? '#f97316' : '#f59e0b';
     const sz = count >= 100 ? 52        : count >= 10 ? 44        : 36;
@@ -54,29 +81,31 @@ const MapManager = (() => {
     };
   }
 
-  // 줌 레벨에 따른 그리드 크기(도) 반환
-  // zoom 14 기준 ~0.002° ≈ 220m, 줌아웃 1단계마다 2배 증가
+  // ── 그룹화 ───────────────────────────────────────────────
+
+  // 동일 주소(또는 좌표 4자리 반올림 ≈11m 이내)별 그룹화
+  function groupByLocation(events) {
+    const groups = {};
+    events.forEach(function(ev) {
+      const key = ev.address
+        ? ev.address.trim()
+        : parseFloat(ev.lat).toFixed(4) + ',' + parseFloat(ev.lng).toFixed(4);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(ev);
+    });
+    return Object.values(groups);
+  }
+
+  // 줌 레벨에 따른 그리드 크기(도) — zoom 14 기준 ~220m
   function gridDegrees() {
     return 0.002 * Math.pow(2, Math.max(0, 14 - map.getZoom()));
   }
 
-  // 위경도 그리드 기반 클러스터링 (축척 ~20km 이상인 줌 레벨에서만 동작)
-  function groupEvents(events) {
-    if (map.getZoom() > 9) {
-      return events.map(function(e) { return [e]; });
-    }
-    const grid  = gridDegrees();
-    const cells = {};
-    events.forEach(function(event) {
-      const key = Math.floor(event.lat / grid) + ',' + Math.floor(event.lng / grid);
-      if (!cells[key]) cells[key] = [];
-      cells[key].push(event);
-    });
-    return Object.values(cells);
-  }
+  // ── 마커 렌더링 ──────────────────────────────────────────
 
-  function init(onClickCallback) {
+  function init(onClickCallback, onGroupCallback) {
     onMarkerClick = onClickCallback;
+    onGroupClick  = onGroupCallback;
     map = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(37.5665, 126.9780),
       zoom: 14,
@@ -117,36 +146,65 @@ const MapManager = (() => {
     markers = [];
   }
 
-  function renderMarkers(events) {
-    clearMarkers();
+  // 단일 위치 그룹(같은 주소의 행사 묶음)을 마커 하나로 렌더링
+  function _renderLocationGroup(events) {
+    // 유효 행사를 우선으로 정렬
+    const sorted = events.slice().sort(function(a, b) {
+      return (a.is_expired ? 1 : 0) - (b.is_expired ? 1 : 0);
+    });
+    const rep = sorted[0];
 
-    const groups = groupEvents(events);
+    const icon    = events.length === 1 ? markerIcon(rep) : locationGroupIcon(rep, events.length);
+    const title   = events.length > 1 ? events.length + '개 행사' : rep.store_name;
+    const onClick = events.length === 1
+      ? function() { if (onMarkerClick) onMarkerClick(rep); }
+      : function() { if (onGroupClick)  onGroupClick(sorted); };
 
-    groups.forEach(function(group) {
-      var m;
+    const m = new naver.maps.Marker({
+      position: new naver.maps.LatLng(rep.lat, rep.lng),
+      map:      map,
+      icon:     icon,
+      title:    title,
+    });
+    naver.maps.Event.addListener(m, 'click', onClick);
+    markers.push(m);
+  }
+
+  // 줌 ≤ 9 : 광역 지리 클러스터링
+  function _renderGeoClusters(events) {
+    const grid  = gridDegrees();
+    const cells = {};
+    events.forEach(function(ev) {
+      const key = Math.floor(parseFloat(ev.lat) / grid) + ',' + Math.floor(parseFloat(ev.lng) / grid);
+      if (!cells[key]) cells[key] = [];
+      cells[key].push(ev);
+    });
+    Object.values(cells).forEach(function(group) {
       if (group.length === 1) {
-        const ev = group[0];
-        m = new naver.maps.Marker({
-          position: new naver.maps.LatLng(ev.lat, ev.lng),
-          map:  map,
-          icon: markerIcon(ev),
-          title: ev.store_name,
-        });
-        naver.maps.Event.addListener(m, 'click', function() {
-          if (onMarkerClick) onMarkerClick(ev);
-        });
+        _renderLocationGroup(group);
       } else {
         const avgLat = group.reduce(function(s, e) { return s + parseFloat(e.lat); }, 0) / group.length;
         const avgLng = group.reduce(function(s, e) { return s + parseFloat(e.lng); }, 0) / group.length;
-        m = new naver.maps.Marker({
+        const m = new naver.maps.Marker({
           position: new naver.maps.LatLng(avgLat, avgLng),
-          map:  map,
-          icon: clusterIcon(group.length),
-          title: group.length + '개 행사',
+          map:      map,
+          icon:     clusterIcon(group.length),
+          title:    group.length + '개 행사',
         });
+        markers.push(m);
       }
-      markers.push(m);
     });
+  }
+
+  function renderMarkers(events) {
+    clearMarkers();
+    if (map.getZoom() <= 9) {
+      // 줌 아웃 : 광역 지리 클러스터링
+      _renderGeoClusters(events);
+    } else {
+      // 일반 줌 : 동일 위치 그룹화 후 렌더링
+      groupByLocation(events).forEach(_renderLocationGroup);
+    }
   }
 
   function getBounds() { return map ? map.getBounds() : null; }
