@@ -88,7 +88,7 @@ const Admin = (() => {
       const active = btn.dataset.tab === tab;
       btn.classList.toggle('bg-white',       active);
       btn.classList.toggle('shadow-sm',      active);
-      btn.classList.toggle('text-amber-500', active);
+      btn.classList.toggle('text-[#0172FE]', active);
       btn.classList.toggle('text-gray-600',  !active);
     });
     if (tab === 'dashboard')  loadDashboard();
@@ -111,14 +111,14 @@ const Admin = (() => {
       el.innerHTML = `
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           ${[
-            { label: '전체 행사',   value: s.total_events,    color: 'amber'  },
-            { label: '오늘 신규',   value: s.today_new,       color: 'green'  },
-            { label: '신고 대기',   value: s.pending_reports, color: 'red'    },
-            { label: '7일 내 만료', value: s.expiring_in_7,   color: 'orange' },
+            { label: '전체 행사',   value: s.total_events,    cls: 'text-[#0172FE]' },
+            { label: '오늘 신규',   value: s.today_new,       cls: 'text-green-500' },
+            { label: '신고 대기',   value: s.pending_reports, cls: 'text-red-500'   },
+            { label: '7일 내 만료', value: s.expiring_in_7,   cls: 'text-orange-500'},
           ].map(c => `
             <div class="bg-white rounded-xl p-4 shadow-sm">
               <p class="text-xs text-gray-500 mb-1">${c.label}</p>
-              <p class="text-2xl font-bold text-${c.color}-500">${c.value}</p>
+              <p class="text-2xl font-bold ${c.cls}">${c.value}</p>
             </div>
           `).join('')}
         </div>
@@ -135,8 +135,8 @@ const Admin = (() => {
           datasets: [{
             label:           '등록 수',
             data:            s.chart_data.map(d => parseInt(d.count)),
-            borderColor:     '#f59e0b',
-            backgroundColor: 'rgba(245,158,11,0.1)',
+            borderColor:     '#0172FE',
+            backgroundColor: 'rgba(1,114,254,0.1)',
             tension:         0.4,
             fill:            true,
           }],
@@ -158,7 +158,7 @@ const Admin = (() => {
     el.innerHTML = `
       <div class="flex gap-2 mb-4 flex-wrap">
         <input id="ev-search" type="text" placeholder="상점명 검색"
-          class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+          class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]"
           onkeydown="if(event.key==='Enter') Admin.searchEvents()">
         <select id="ev-status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
           <option value="">전체 상태</option>
@@ -166,7 +166,7 @@ const Admin = (() => {
           <option value="expired">만료</option>
         </select>
         <button onclick="Admin.searchEvents()"
-          class="bg-amber-400 text-white px-4 py-2 rounded-lg text-sm font-medium">검색</button>
+          class="bg-[#0172FE] text-white px-4 py-2 rounded-lg text-sm font-medium">검색</button>
       </div>
       <div id="events-table-wrap"></div>
     `;
@@ -331,9 +331,9 @@ const Admin = (() => {
           <div class="flex gap-2">
             <input id="new-cat-name" type="text" placeholder="새 카테고리명"
               onkeydown="if(event.key==='Enter') Admin.addCategory()"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
             <button onclick="Admin.addCategory()"
-              class="bg-amber-400 text-white px-4 py-2 rounded-lg text-sm font-medium">추가</button>
+              class="bg-[#0172FE] text-white px-4 py-2 rounded-lg text-sm font-medium">추가</button>
           </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">

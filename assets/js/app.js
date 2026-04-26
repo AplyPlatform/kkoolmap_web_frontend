@@ -29,7 +29,7 @@ const AppState = (() => {
     cats.forEach(cat => {
       const btn = document.createElement('button');
       btn.dataset.id  = cat.id;
-      btn.className   = 'category-tab flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-300 text-gray-600 whitespace-nowrap';
+      btn.className   = 'category-tab flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-[#0172FE] bg-[#0172FE] text-white whitespace-nowrap';
       btn.textContent = cat.name;
       btn.onclick     = () => selectCategory(Number(cat.id));
       bar.appendChild(btn);
@@ -77,10 +77,12 @@ const AppState = (() => {
     currentEventId = event.id;
     currentEvent   = event;
 
+    const myReaction = localStorage.getItem(`reacted_${event.id}`) || '';
+
     const saleHtml = (event.sale_items || []).map(item => `
       <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
         <span class="text-sm text-gray-700">${item.description}</span>
-        <span class="text-sm font-bold text-amber-500 ml-2 flex-shrink-0">${item.discount_rate}</span>
+        <span class="text-sm font-bold text-[#0172FE] ml-2 flex-shrink-0">${item.discount_rate}</span>
       </div>
     `).join('');
 
@@ -88,7 +90,7 @@ const AppState = (() => {
       <div class="flex justify-between items-start mb-2">
         <div class="flex-1 min-w-0">
           <h3 class="text-lg font-bold text-gray-900 truncate">${event.store_name}</h3>
-          <span class="inline-block text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full mt-1">
+          <span class="inline-block text-xs bg-[#cce4ff] text-[#0172FE] px-2 py-0.5 rounded-full mt-1">
             ${event.category_custom || event.category_name}
           </span>
         </div>
@@ -106,26 +108,57 @@ const AppState = (() => {
         <button onclick="openReportModal()"
           class="text-xs text-gray-400 underline">신고하기</button>
         <button id="edit-toggle-btn" onclick="showEditPasswordSection()"
-          class="text-xs font-medium text-amber-600 border border-amber-400 px-3 py-1.5 rounded-lg">
+          class="text-xs font-medium text-[#0172FE] border border-[#0172FE] px-3 py-1.5 rounded-lg">
           수정하기
         </button>
       </div>
-      <div id="edit-password-section" class="hidden mt-3 p-3 bg-amber-50 rounded-xl">
+      <div id="edit-password-section" class="hidden mt-3 p-3 bg-[#e6f2ff] rounded-xl">
         <p class="text-xs text-gray-600 mb-2">등록 시 설정한 비밀번호를 입력해주세요</p>
         <div class="flex gap-2">
           <input id="edit-pw-input" type="password" placeholder="비밀번호"
             onkeydown="if(event.key==='Enter') verifyAndShowEdit()"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
           <button onclick="verifyAndShowEdit()"
-            class="flex-shrink-0 bg-amber-400 text-white px-4 py-2 rounded-lg text-sm font-medium">
+            class="flex-shrink-0 bg-[#0172FE] text-white px-4 py-2 rounded-lg text-sm font-medium">
             확인
           </button>
         </div>
         <p id="edit-pw-error" class="hidden text-xs text-red-500 mt-1"></p>
       </div>
+
+      <!-- 반응 & 댓글 -->
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="flex gap-2 mb-4">
+          <button onclick="submitReaction(${event.id}, 'correct')" id="btn-correct"
+            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ${myReaction === 'correct' ? 'bg-[#0172FE] border-[#0172FE] text-white' : 'border-gray-200 text-gray-600 hover:border-[#0172FE] hover:text-[#0172FE]'}">
+            👍 맞아요 <span id="cnt-correct" class="font-bold ml-1">-</span>
+          </button>
+          <button onclick="submitReaction(${event.id}, 'incorrect')" id="btn-incorrect"
+            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ${myReaction === 'incorrect' ? 'bg-red-500 border-red-500 text-white' : 'border-gray-200 text-gray-600 hover:border-red-400 hover:text-red-500'}">
+            👎 틀려요 <span id="cnt-incorrect" class="font-bold ml-1">-</span>
+          </button>
+        </div>
+        <div class="space-y-2 mb-3">
+          <input id="comment-input" type="text" placeholder="댓글을 남겨보세요 (최대 200자)" maxlength="200"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+          <div class="flex gap-2">
+            <input id="comment-pw" type="password" placeholder="비밀번호 (삭제 시 필요)"
+              onkeydown="if(event.key==='Enter') submitComment(${event.id})"
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            <button onclick="submitComment(${event.id})"
+              class="flex-shrink-0 bg-[#0172FE] text-white px-4 py-2 rounded-lg text-sm font-medium">
+              등록
+            </button>
+          </div>
+        </div>
+        <div id="comments-list" class="space-y-2">
+          <p class="text-gray-400 text-xs text-center py-2">로딩 중...</p>
+        </div>
+      </div>
     `;
 
     document.getElementById('detail-modal').classList.remove('hidden');
+    loadComments(event.id);
   }
 
   // ── 동일 위치 그룹 패널 ──────────────────────────────────
@@ -159,12 +192,12 @@ const AppState = (() => {
       </div>
       <div class="space-y-2">
         ${showing.map((ev, idx) => `
-          <div class="border border-gray-100 rounded-xl p-3 cursor-pointer hover:bg-amber-50 transition-colors"
+          <div class="border border-gray-100 rounded-xl p-3 cursor-pointer hover:bg-[#e6f2ff] transition-colors"
                onclick="AppState.selectGroupEvent(${idx})">
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0 flex-1">
                 <p class="text-sm font-semibold text-gray-900 truncate">${ev.store_name}</p>
-                <span class="inline-block text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full mt-0.5">
+                <span class="inline-block text-xs bg-[#cce4ff] text-[#0172FE] px-1.5 py-0.5 rounded-full mt-0.5">
                   ${ev.category_custom || ev.category_name}
                 </span>
               </div>
@@ -173,7 +206,7 @@ const AppState = (() => {
                 : ''}
             </div>
             ${ev.sale_items && ev.sale_items.length ? `
-              <p class="text-sm font-bold text-amber-500 mt-1.5">${ev.sale_items[0].discount_rate}${ev.sale_items.length > 1 ? ` 외 ${ev.sale_items.length - 1}건` : ''}</p>
+              <p class="text-sm font-bold text-[#0172FE] mt-1.5">${ev.sale_items[0].discount_rate}${ev.sale_items.length > 1 ? ` 외 ${ev.sale_items.length - 1}건` : ''}</p>
             ` : ''}
             <p class="text-xs text-gray-400 mt-1">${fmtDt(ev.start_date)} ~ ${fmtDt(ev.end_date)}</p>
           </div>
@@ -181,7 +214,7 @@ const AppState = (() => {
       </div>
       ${hasMore ? `
         <button onclick="AppState.loadMoreGroup()"
-          class="w-full mt-3 text-sm text-amber-600 font-medium py-2.5 border border-amber-200 rounded-xl hover:bg-amber-50 transition-colors">
+          class="w-full mt-3 text-sm text-[#0172FE] font-medium py-2.5 border border-[#99c9ff] rounded-xl hover:bg-[#e6f2ff] transition-colors">
           더보기 (${currentGroup.length - end}개 더)
         </button>
       ` : ''}
@@ -227,8 +260,8 @@ function openReportModal() {
   document.getElementById('report-form-content').innerHTML = `
     <div class="space-y-2 mb-4">
       ${['잘못된 정보', '이미 종료된 행사', '허위/과장 광고', '기타'].map(r => `
-        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-amber-50">
-          <input type="radio" name="report-reason" value="${r}" class="accent-amber-400">
+        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-[#e6f2ff]">
+          <input type="radio" name="report-reason" value="${r}" class="accent-[#0172FE]">
           <span class="text-sm text-gray-700">${r}</span>
         </label>
       `).join('')}
@@ -348,7 +381,7 @@ function showEditForm(password) {
       <button type="button" data-edit-cat-id="${cat.id}"
         onclick="selectEditCategory(${cat.id}, ${cat.is_custom})"
         class="edit-cat-btn text-xs py-2 px-1 border rounded-lg transition-colors ${
-          active ? 'bg-amber-400 text-white border-amber-400' : 'border-gray-300 text-gray-600'
+          active ? 'bg-[#0172FE] text-white border-[#0172FE]' : 'border-gray-300 text-gray-600'
         }">
         ${_esc(cat.name)}
       </button>
@@ -375,7 +408,7 @@ function showEditForm(password) {
       <div id="edit-custom-cat-wrap" class="${showCustom ? '' : 'hidden'} mt-2">
         <input id="edit-custom-category" type="text" placeholder="카테고리 직접 입력"
           value="${_esc(decodedCustom)}"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
       </div>
     </div>
 
@@ -384,16 +417,16 @@ function showEditForm(password) {
       <div class="space-y-1">
         <div class="flex gap-2 items-center">
           <input id="edit-start-date" type="date" value="${_esc(dtDate(event.start_date))}"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
           <input id="edit-start-time" type="time" value="${_esc(dtTime(event.start_date))}"
-            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
         </div>
         <div class="flex gap-2 items-center">
           <span class="text-gray-400 text-sm flex-shrink-0">~</span>
           <input id="edit-end-date" type="date" value="${_esc(dtDate(event.end_date))}"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
           <input id="edit-end-time" type="time" value="${_esc(dtTime(event.end_date))}"
-            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
         </div>
       </div>
     </div>
@@ -402,7 +435,7 @@ function showEditForm(password) {
       <label class="block text-sm font-medium text-gray-700 mb-2">세일 항목 <span class="text-red-500">*</span></label>
       <div id="edit-sale-items-container"></div>
       <button type="button" onclick="addEditItem()"
-        class="mt-2 text-sm text-amber-500 font-medium flex items-center gap-1">
+        class="mt-2 text-sm text-[#0172FE] font-medium flex items-center gap-1">
         <span class="text-lg leading-none">+</span> 항목 추가
       </button>
     </div>
@@ -411,14 +444,14 @@ function showEditForm(password) {
       <label class="block text-sm font-medium text-gray-700 mb-1">기타 메모 <span class="text-xs text-gray-400">(선택)</span></label>
       <textarea id="edit-memo" maxlength="500" rows="3"
         oninput="document.getElementById('edit-memo-counter').textContent = this.value.length"
-        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none">${_esc(decodedMemo)}</textarea>
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE] resize-none">${_esc(decodedMemo)}</textarea>
       <p class="text-right text-xs text-gray-400 mt-0.5"><span id="edit-memo-counter">${decodedMemo.length}</span> / 500</p>
     </div>
 
     <p id="edit-form-error" class="hidden text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-lg"></p>
 
     <button type="button" onclick="submitEdit()"
-      class="w-full bg-amber-400 text-white py-3 rounded-xl font-bold text-base mb-2">
+      class="w-full bg-[#0172FE] text-white py-3 rounded-xl font-bold text-base mb-2">
       저장하기
     </button>
     <button type="button" onclick="deleteEvent()"
@@ -438,10 +471,10 @@ function renderEditSaleItemsContainer() {
       <div class="flex-1 space-y-1">
         <input type="text" placeholder="세일 내용 (예: 전 메뉴)" value="${_esc(item.description)}"
           oninput="updateEditItem(${i},'description',this.value)"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
         <input type="text" placeholder="할인율 (예: 30%, 1+1)" value="${_esc(item.discount_rate)}"
           oninput="updateEditItem(${i},'discount_rate',this.value)"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
       </div>
       ${_editSaleItems.length > 1 ? `
         <button type="button" onclick="removeEditItem(${i})"
@@ -471,9 +504,9 @@ function selectEditCategory(catId, isCustom) {
   _editCategoryId = catId;
   document.querySelectorAll('.edit-cat-btn').forEach(btn => {
     const active = parseInt(btn.dataset.editCatId) === catId;
-    btn.classList.toggle('bg-amber-400',     active);
+    btn.classList.toggle('bg-[#0172FE]',     active);
     btn.classList.toggle('text-white',       active);
-    btn.classList.toggle('border-amber-400', active);
+    btn.classList.toggle('border-[#0172FE]', active);
     btn.classList.toggle('border-gray-300',  !active);
     btn.classList.toggle('text-gray-600',    !active);
   });
@@ -570,3 +603,153 @@ async function deleteEvent() {
 }
 
 window.addEventListener('DOMContentLoaded', () => AppState.init());
+
+// ── 댓글 / 반응 ───────────────────────────────────────────────
+
+function _escHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function loadComments(eventId) {
+  try {
+    const res  = await fetch(`${API_BASE}api/comments.php?event_id=${eventId}`);
+    const json = await res.json();
+    if (!json.success) return;
+
+    const { reactions, comments } = json.data;
+
+    const cntCorrect   = document.getElementById('cnt-correct');
+    const cntIncorrect = document.getElementById('cnt-incorrect');
+    if (cntCorrect)   cntCorrect.textContent   = reactions.correct;
+    if (cntIncorrect) cntIncorrect.textContent = reactions.incorrect;
+
+    const list = document.getElementById('comments-list');
+    if (!list) return;
+
+    if (!comments.length) {
+      list.innerHTML = '<p class="text-gray-400 text-xs text-center py-2">첫 댓글을 남겨보세요!</p>';
+      return;
+    }
+
+    list.innerHTML = `
+      <p class="text-xs text-gray-400 mb-2">댓글 ${comments.length}개</p>
+      ${comments.map(c => `
+        <div class="bg-gray-50 rounded-lg px-3 py-2" id="comment-row-${c.id}">
+          <div class="flex items-start justify-between gap-2">
+            <p class="text-sm text-gray-700 break-words flex-1">${_escHtml(c.content)}</p>
+            <button onclick="toggleCommentDelete(${c.id})"
+              class="text-xs text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5 transition-colors">삭제</button>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">${fmtDt(c.created_at)}</p>
+          <div id="del-section-${c.id}" class="hidden mt-2">
+            <div class="flex gap-2">
+              <input type="password" id="del-pw-${c.id}" placeholder="비밀번호 입력"
+                onkeydown="if(event.key==='Enter') deleteComment(${c.id}, ${eventId})"
+                class="flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-red-400">
+              <button onclick="deleteComment(${c.id}, ${eventId})"
+                class="flex-shrink-0 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium">확인</button>
+              <button onclick="toggleCommentDelete(${c.id})"
+                class="flex-shrink-0 text-gray-400 hover:text-gray-600 text-xs px-2 py-1.5">취소</button>
+            </div>
+            <p id="del-err-${c.id}" class="hidden text-red-500 text-xs mt-1"></p>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  } catch {
+    const list = document.getElementById('comments-list');
+    if (list) list.innerHTML = '<p class="text-gray-400 text-xs text-center py-2">댓글을 불러오지 못했습니다.</p>';
+  }
+}
+
+function _applyReactionStyle(reaction) {
+  const btnCorrect   = document.getElementById('btn-correct');
+  const btnIncorrect = document.getElementById('btn-incorrect');
+  if (!btnCorrect || !btnIncorrect) return;
+
+  const base      = 'flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ';
+  const inactive  = 'border-gray-200 text-gray-600';
+  btnCorrect.className   = base + (reaction === 'correct'   ? 'bg-[#0172FE] border-[#0172FE] text-white' : inactive + ' hover:border-[#0172FE] hover:text-[#0172FE]');
+  btnIncorrect.className = base + (reaction === 'incorrect' ? 'bg-red-500 border-red-500 text-white'     : inactive + ' hover:border-red-400 hover:text-red-500');
+}
+
+async function submitReaction(eventId, reaction) {
+  try {
+    const res  = await fetch(API_BASE + 'api/comments.php', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ event_id: eventId, type: 'reaction', reaction }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      localStorage.setItem(`reacted_${eventId}`, reaction);
+      _applyReactionStyle(reaction);
+      loadComments(eventId);
+    }
+  } catch { }
+}
+
+async function submitComment(eventId) {
+  const input    = document.getElementById('comment-input');
+  const pwInput  = document.getElementById('comment-pw');
+  if (!input || !pwInput) return;
+  const content  = input.value.trim();
+  const password = pwInput.value;
+  if (!content)  { alert('댓글 내용을 입력해주세요.'); return; }
+  if (!password) { alert('비밀번호를 입력해주세요.'); return; }
+
+  try {
+    const res  = await fetch(API_BASE + 'api/comments.php', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ event_id: eventId, type: 'comment', content, password }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      input.value   = '';
+      pwInput.value = '';
+      loadComments(eventId);
+    } else {
+      alert(json.error || '댓글 등록에 실패했습니다.');
+    }
+  } catch {
+    alert('네트워크 오류가 발생했습니다.');
+  }
+}
+
+function toggleCommentDelete(commentId) {
+  const section = document.getElementById(`del-section-${commentId}`);
+  if (!section) return;
+  const isHidden = section.classList.contains('hidden');
+  section.classList.toggle('hidden', !isHidden);
+  if (isHidden) document.getElementById(`del-pw-${commentId}`)?.focus();
+  document.getElementById(`del-err-${commentId}`)?.classList.add('hidden');
+}
+
+async function deleteComment(commentId, eventId) {
+  const pwInput = document.getElementById(`del-pw-${commentId}`);
+  const errEl   = document.getElementById(`del-err-${commentId}`);
+  if (!pwInput) return;
+  const password = pwInput.value;
+  if (!password) {
+    if (errEl) { errEl.textContent = '비밀번호를 입력해주세요.'; errEl.classList.remove('hidden'); }
+    return;
+  }
+  errEl?.classList.add('hidden');
+
+  try {
+    const res  = await fetch(API_BASE + 'api/comments.php', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ comment_id: commentId, password }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      document.getElementById(`comment-row-${commentId}`)?.remove();
+    } else {
+      if (errEl) { errEl.textContent = json.error || '삭제에 실패했습니다.'; errEl.classList.remove('hidden'); }
+    }
+  } catch {
+    if (errEl) { errEl.textContent = '네트워크 오류가 발생했습니다.'; errEl.classList.remove('hidden'); }
+  }
+}

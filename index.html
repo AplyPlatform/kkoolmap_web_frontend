@@ -25,7 +25,8 @@
   <style>
     html, body { height: 100%; margin: 0; overflow: hidden; }
     #map { width: 100%; height: 100%; }
-    .category-tab.active { background-color: #f59e0b; color: #fff; border-color: #f59e0b; }
+    .category-tab.active { background-color: #ffffff; color: #0172FE; border-color: #0172FE; }
+    .category-tab:not(.active) { background-color: #0172FE; color: #ffffff; border-color: #0172FE; }
     #category-bar::-webkit-scrollbar { display: none; }
   </style>
 </head>
@@ -36,10 +37,16 @@
 
   <!-- 상단 바 (타이틀 + 카테고리 필터) -->
   <div class="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-2 px-2 flex items-center gap-2">
-    <span class="flex-shrink-0 font-extrabold text-amber-500 text-base tracking-tight">꿀맵</span>
+    <div class="flex-shrink-0 flex flex-col leading-none">
+      <span class="text-[12px] text-[#0172FE] font-medium tracking-tight">대한민국 개꿀템 모음</span>
+      <div class="flex items-center gap-1">
+        <img src="assets/imgs/favicon-96x96.png" alt="꿀맵" class="w-5 h-5">
+        <span class="font-extrabold text-[#0172FE] text-base tracking-tight">꿀맵</span>
+      </div>
+    </div>
     <div id="category-bar" class="flex gap-2 overflow-x-auto">
       <button data-id="" onclick="AppState.selectCategory(null)"
-        class="category-tab active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-amber-400 whitespace-nowrap">
+        class="category-tab active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-[#0172FE] whitespace-nowrap">
         전체
       </button>
       <!-- 카테고리 탭 동적 삽입 -->
@@ -79,7 +86,7 @@
 
   <!-- FAB 버튼 -->
   <button onclick="openSubmitPanel()"
-    class="fixed bottom-6 right-4 z-20 bg-amber-400 text-white px-5 py-3 rounded-full shadow-lg font-bold text-sm whitespace-nowrap">
+    class="fixed bottom-6 right-4 z-20 bg-[#0172FE] text-white px-5 py-3 rounded-full shadow-lg font-bold text-sm whitespace-nowrap">
     🍯 개꿀 행사 등록하기
   </button>
 

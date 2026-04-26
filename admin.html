@@ -12,17 +12,17 @@
   <!-- 로그인 화면 -->
   <div id="login-screen" class="min-h-screen flex items-center justify-center px-4">
     <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
-      <h1 class="text-2xl font-bold text-center mb-1 text-amber-500">🍯 HoneyMap</h1>
+      <h1 class="text-2xl font-bold text-center mb-1 text-[#0172FE]">🍯 HoneyMap</h1>
       <p class="text-center text-gray-400 text-sm mb-6">관리자 로그인</p>
       <input id="login-username" type="text" placeholder="아이디"
-        class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+        class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
       <input id="login-password" type="password" placeholder="비밀번호"
         onkeydown="if(event.key==='Enter') Admin.login()"
-        class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-1 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+        class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
       <p id="login-error" class="hidden text-red-500 text-xs mb-3 mt-1"></p>
       <div class="mt-4">
         <button onclick="Admin.login()"
-          class="w-full bg-amber-400 text-white py-3 rounded-xl font-bold text-sm">
+          class="w-full bg-[#0172FE] text-white py-3 rounded-xl font-bold text-sm">
           로그인
         </button>
       </div>
@@ -33,7 +33,7 @@
   <div id="admin-main" class="hidden">
     <header class="bg-white shadow-sm sticky top-0 z-10">
       <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-        <h1 class="text-lg font-bold text-amber-500">🍯 HoneyMap 관리자</h1>
+        <h1 class="text-lg font-bold text-[#0172FE]">🍯 HoneyMap 관리자</h1>
         <button onclick="Admin.logout()" class="text-sm text-gray-400 hover:text-gray-600">로그아웃</button>
       </div>
     </header>
