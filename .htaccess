@@ -1,0 +1,11 @@
+Options -Indexes
+RewriteEngine On
+
+# API 직접 접근 허용
+RewriteCond %{REQUEST_URI} /api/ [NC]
+RewriteRule ^ - [L]
+
+# 존재하는 파일/디렉터리는 그대로 서빙
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

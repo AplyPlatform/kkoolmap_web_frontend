@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HoneyMap — 주변 꿀세일</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script type="text/javascript"
+    src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=5harbulyju&submodules=geocoder"></script>
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    #map { width: 100%; height: 100%; }
+    .category-tab.active { background-color: #f59e0b; color: #fff; border-color: #f59e0b; }
+    #category-bar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <!-- 지도 -->
+  <div id="map"></div>
+
+  <!-- 상단 바 (타이틀 + 카테고리 필터) -->
+  <div class="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-2 px-2 flex items-center gap-2">
+    <span class="flex-shrink-0 font-extrabold text-amber-500 text-base tracking-tight">꿀맵</span>
+    <div id="category-bar" class="flex gap-2 overflow-x-auto">
+      <button data-id="" onclick="AppState.selectCategory(null)"
+        class="category-tab active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-amber-400 whitespace-nowrap">
+        전체
+      </button>
+      <!-- 카테고리 탭 동적 삽입 -->
+    </div>
+  </div>
+
+  <!-- 행사 상세 팝업 -->
+  <div id="detail-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" onclick="closeDetailPanel()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[80vh] overflow-y-auto">
+      <button onclick="closeDetailPanel()"
+        class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 z-10">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <div id="detail-content" class="px-4 pt-4 pb-6 pr-12"></div>
+    </div>
+  </div>
+
+  <!-- 행사 등록 팝업 -->
+  <div id="submit-panel" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" onclick="closeSubmitPanel()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between px-4 py-3 border-b flex-shrink-0">
+        <h2 class="text-lg font-bold">할인 정보 등록</h2>
+        <button onclick="closeSubmitPanel()"
+          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="submit-form-content" class="px-4 py-4 overflow-y-auto flex-1"></div>
+    </div>
+  </div>
+
+  <!-- FAB 버튼 -->
+  <button onclick="openSubmitPanel()"
+    class="fixed bottom-6 right-4 z-20 bg-amber-400 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/>
+    </svg>
+  </button>
+
+  <!-- 신고 모달 -->
+  <div id="report-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" onclick="closeReportModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 z-10">
+      <h3 class="font-bold text-base mb-3">신고 사유를 선택해주세요</h3>
+      <div id="report-form-content"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/map.js"></script>
+  <script src="assets/js/submit.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
