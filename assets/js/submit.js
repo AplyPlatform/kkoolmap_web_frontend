@@ -84,12 +84,20 @@ const SubmitManager = (() => {
         <label class="block text-sm font-medium text-gray-700 mb-1">
           행사 기간 <span class="text-red-500">*</span>
         </label>
-        <div class="flex gap-2 items-center">
-          <input id="start-date" type="date"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-          <span class="text-gray-400 text-sm">~</span>
-          <input id="end-date" type="date"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+        <div class="space-y-1">
+          <div class="flex gap-2 items-center">
+            <input id="start-date" type="date"
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            <input id="start-time" type="time" value="00:00"
+              class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-400 text-sm flex-shrink-0">~</span>
+            <input id="end-date" type="date"
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+            <input id="end-time" type="time" value="23:59"
+              class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          </div>
         </div>
       </div>
 
@@ -358,9 +366,15 @@ const SubmitManager = (() => {
     if (!selectedCategoryId) { showError('카테고리를 선택해주세요.'); return; }
 
     const startDate = document.getElementById('start-date').value;
+    const startTime = document.getElementById('start-time').value || '00:00';
     const endDate   = document.getElementById('end-date').value;
-    if (!startDate || !endDate)                  { showError('행사 기간을 입력해주세요.'); return; }
-    if (new Date(startDate) > new Date(endDate)) { showError('종료일은 시작일 이후여야 합니다.'); return; }
+    const endTime   = document.getElementById('end-time').value || '23:59';
+    if (!startDate || !endDate) { showError('행사 기간을 입력해주세요.'); return; }
+    if (new Date(`${startDate}T${startTime}`) > new Date(`${endDate}T${endTime}`)) {
+      showError('종료 일시는 시작 일시 이후여야 합니다.'); return;
+    }
+    const startDatetime = `${startDate} ${startTime}:00`;
+    const endDatetime   = `${endDate} ${endTime}:00`;
 
     const validItems = saleItems.filter(i => i.description.trim() && i.discount_rate.trim());
     if (!validItems.length) { showError('세일 항목을 최소 1개 입력해주세요.'); return; }
@@ -378,8 +392,8 @@ const SubmitManager = (() => {
       address:         address,
       lat:             lat,
       lng:             lng,
-      start_date:      startDate,
-      end_date:        endDate,
+      start_date:      startDatetime,
+      end_date:        endDatetime,
       sale_items:      validItems,
       memo:            memoEl ? memoEl.value.trim() : '',
       password:        password,

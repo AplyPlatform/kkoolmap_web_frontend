@@ -169,7 +169,7 @@ const Admin = (() => {
                   <tr class="border-t border-gray-100 hover:bg-gray-50">
                     <td class="px-4 py-3 font-medium max-w-[120px] truncate">${ev.store_name}</td>
                     <td class="px-4 py-3 hidden md:table-cell text-gray-500 text-xs">${ev.category_name}</td>
-                    <td class="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs whitespace-nowrap">${ev.start_date} ~ ${ev.end_date}</td>
+                    <td class="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs whitespace-nowrap">${fmtDt(ev.start_date)} ~ ${fmtDt(ev.end_date)}</td>
                     <td class="px-4 py-3">
                       <span class="px-2 py-0.5 rounded-full text-xs font-medium ${ev.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
                         ${ev.status === 'active' ? '활성' : '만료'}

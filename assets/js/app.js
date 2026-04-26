@@ -94,7 +94,7 @@ const AppState = (() => {
           : ''}
       </div>
       <p class="text-xs text-gray-500 mb-1"><b>📍주소</b> ${event.address}</p>
-      <p class="text-xs text-gray-500 mb-3">🗓<b>행사기간</b> ${event.start_date} ~ ${event.end_date}</p>
+      <p class="text-xs text-gray-500 mb-3">🗓<b>행사기간</b> ${fmtDt(event.start_date)} ~ ${fmtDt(event.end_date)}</p>
       ${saleHtml
         ? `<div class="mb-4">${saleHtml}</div>`
         : '<p class="text-sm text-gray-400 mb-4">등록된 세일 항목이 없습니다.</p>'}
@@ -314,12 +314,20 @@ function showEditForm(password) {
 
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">행사 기간 <span class="text-red-500">*</span></label>
-      <div class="flex gap-2 items-center">
-        <input id="edit-start-date" type="date" value="${_esc(event.start_date)}"
-          class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-        <span class="text-gray-400 text-sm">~</span>
-        <input id="edit-end-date" type="date" value="${_esc(event.end_date)}"
-          class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+      <div class="space-y-1">
+        <div class="flex gap-2 items-center">
+          <input id="edit-start-date" type="date" value="${_esc(dtDate(event.start_date))}"
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          <input id="edit-start-time" type="time" value="${_esc(dtTime(event.start_date))}"
+            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+        </div>
+        <div class="flex gap-2 items-center">
+          <span class="text-gray-400 text-sm flex-shrink-0">~</span>
+          <input id="edit-end-date" type="date" value="${_esc(dtDate(event.end_date))}"
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+          <input id="edit-end-time" type="time" value="${_esc(dtTime(event.end_date))}"
+            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+        </div>
       </div>
     </div>
 
@@ -415,13 +423,17 @@ async function submitEdit() {
   errEl.classList.add('hidden');
 
   const startDate = document.getElementById('edit-start-date')?.value || '';
+  const startTime = document.getElementById('edit-start-time')?.value || '00:00';
   const endDate   = document.getElementById('edit-end-date')?.value || '';
+  const endTime   = document.getElementById('edit-end-time')?.value || '23:59';
   if (!startDate || !endDate) {
     errEl.textContent = '행사 기간을 입력해주세요.'; errEl.classList.remove('hidden'); return;
   }
-  if (new Date(startDate) > new Date(endDate)) {
-    errEl.textContent = '종료일은 시작일 이후여야 합니다.'; errEl.classList.remove('hidden'); return;
+  if (new Date(`${startDate}T${startTime}`) > new Date(`${endDate}T${endTime}`)) {
+    errEl.textContent = '종료 일시는 시작 일시 이후여야 합니다.'; errEl.classList.remove('hidden'); return;
   }
+  const startDatetime = `${startDate} ${startTime}:00`;
+  const endDatetime   = `${endDate} ${endTime}:00`;
 
   const validItems = _editSaleItems.filter(i => i.description.trim() && i.discount_rate.trim());
   if (!validItems.length) {
@@ -436,8 +448,8 @@ async function submitEdit() {
     password:        _editPassword,
     category_id:     _editCategoryId,
     category_custom: customCatEl ? customCatEl.value.trim() : '',
-    start_date:      startDate,
-    end_date:        endDate,
+    start_date:      startDatetime,
+    end_date:        endDatetime,
     sale_items:      validItems,
     memo:            memoEl ? memoEl.value.trim() : '',
   };
