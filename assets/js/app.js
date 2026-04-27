@@ -103,7 +103,7 @@ const AppState = (() => {
       ${saleHtml
         ? `<div class="mb-4">${saleHtml}</div>`
         : '<p class="text-sm text-gray-400 mb-4">등록된 세일 항목이 없습니다.</p>'}
-      ${event.memo ? `<p class="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2 mb-4 whitespace-pre-wrap">${event.memo}</p>` : ''}
+      ${event.memo ? `<p class="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2 mb-4 whitespace-pre-wrap">${linkifyMemo(event.memo)}</p>` : ''}
       <div class="flex items-center justify-between mt-2 pt-3 border-t border-gray-100">
         <button onclick="openReportModal()"
           class="text-xs text-gray-400 underline">신고하기</button>
@@ -311,6 +311,23 @@ let _editPassword   = '';
 
 function _esc(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function linkifyMemo(text) {
+  if (!text) return '';
+  const t = document.createElement('textarea');
+  t.innerHTML = text;
+  const decoded = t.value;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  let result = '', lastIndex = 0, match;
+  while ((match = urlRegex.exec(decoded)) !== null) {
+    result += _esc(decoded.slice(lastIndex, match.index));
+    const url = _esc(match[1]);
+    result += `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline break-all">${url}</a>`;
+    lastIndex = urlRegex.lastIndex;
+  }
+  result += _esc(decoded.slice(lastIndex));
+  return result;
 }
 
 function _decodeHtml(str) {
