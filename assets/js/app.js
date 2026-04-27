@@ -415,7 +415,7 @@ function showEditForm(password) {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       </button>
-      <h3 class="text-base font-bold text-gray-900">행사 정보 수정</h3>
+      <h3 class="text-base font-bold text-gray-900">개꿀 정보 수정</h3>
     </div>
     <p class="text-xs text-gray-500 mb-4">🏪 ${event.store_name} &nbsp;·&nbsp; ${event.address}</p>
 
@@ -593,7 +593,7 @@ async function submitEdit() {
 }
 
 async function deleteEvent() {
-  if (!confirm('이 행사 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) return;
+  if (!confirm('이 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) return;
 
   const errEl = document.getElementById('edit-form-error');
   errEl.classList.add('hidden');
