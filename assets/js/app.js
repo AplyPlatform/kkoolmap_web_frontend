@@ -29,7 +29,7 @@ const AppState = (() => {
     cats.forEach(cat => {
       const btn = document.createElement('button');
       btn.dataset.id  = cat.id;
-      btn.className   = 'category-tab flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-[#0172FE] bg-[#0172FE] text-white whitespace-nowrap';
+      btn.className   = 'category-tab flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-[#0066cc] bg-[#0066cc] text-white whitespace-nowrap';
       btn.textContent = cat.name;
       btn.onclick     = () => selectCategory(Number(cat.id));
       bar.appendChild(btn);
@@ -82,15 +82,15 @@ const AppState = (() => {
     const saleHtml = (event.sale_items || []).map(item => `
       <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
         <span class="text-sm text-gray-700">${item.description}</span>
-        <span class="text-sm font-bold text-[#0172FE] ml-2 flex-shrink-0">${item.discount_rate}</span>
+        <span class="text-sm font-bold text-[#0066cc] ml-2 flex-shrink-0">${item.discount_rate}</span>
       </div>
     `).join('');
 
     document.getElementById('detail-content').innerHTML = `
       <div class="flex justify-between items-start mb-2">
         <div class="flex-1 min-w-0">
-          <h3 class="text-lg font-bold text-gray-900 truncate">${event.store_name}</h3>
-          <span class="inline-block text-xs bg-[#cce4ff] text-[#0172FE] px-2 py-0.5 rounded-full mt-1">
+          <h3 class="text-[17px] font-semibold text-[#1d1d1f] tracking-[-0.374px] truncate">${event.store_name}</h3>
+          <span class="inline-block text-xs bg-[#d6eaff] text-[#0066cc] px-2 py-0.5 rounded-full mt-1">
             ${event.category_custom || event.category_name}
           </span>
         </div>
@@ -98,28 +98,28 @@ const AppState = (() => {
           ? '<span class="ml-2 text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">종료</span>'
           : ''}
       </div>
-      <p class="text-xs text-gray-500 mb-1"><b>📍주소</b> ${event.address}</p>
-      <p class="text-xs text-gray-500 mb-3">🗓<b>행사기간</b> ${fmtDt(event.start_date)} ~ ${fmtDt(event.end_date)}</p>
+      <p class="text-xs text-[#7a7a7a] mb-1"><b>📍주소</b> ${event.address}</p>
+      <p class="text-xs text-[#7a7a7a] mb-3">🗓<b>행사기간</b> ${fmtDt(event.start_date)} ~ ${fmtDt(event.end_date)}</p>
       ${saleHtml
         ? `<div class="mb-4">${saleHtml}</div>`
         : '<p class="text-sm text-gray-400 mb-4">등록된 세일 항목이 없습니다.</p>'}
       ${event.memo ? `<p class="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2 mb-4 whitespace-pre-wrap">${linkifyMemo(event.memo)}</p>` : ''}
       <div class="flex items-center justify-between mt-2 pt-3 border-t border-gray-100">
         <button onclick="openReportModal()"
-          class="text-xs text-gray-400 underline">신고하기</button>
+          class="text-xs text-[#7a7a7a] underline">신고하기</button>
         <button id="edit-toggle-btn" onclick="showEditPasswordSection()"
-          class="text-xs font-medium text-[#0172FE] border border-[#0172FE] px-3 py-1.5 rounded-lg">
+          class="text-xs font-medium text-[#0066cc] border border-[#0066cc] px-3 py-1.5 rounded-full transition-transform active:scale-95">
           수정하기
         </button>
       </div>
-      <div id="edit-password-section" class="hidden mt-3 p-3 bg-[#e6f2ff] rounded-xl">
-        <p class="text-xs text-gray-600 mb-2">등록 시 설정한 비밀번호를 입력해주세요</p>
+      <div id="edit-password-section" class="hidden mt-3 p-3 bg-[#e8f0ff] rounded-[11px]">
+        <p class="text-xs text-[#1d1d1f]/70 mb-2">등록 시 설정한 비밀번호를 입력해주세요</p>
         <div class="flex gap-2">
           <input id="edit-pw-input" type="password" placeholder="비밀번호"
             onkeydown="if(event.key==='Enter') verifyAndShowEdit()"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <button onclick="verifyAndShowEdit()"
-            class="flex-shrink-0 bg-[#0172FE] text-white px-4 py-2 rounded-lg text-sm font-medium">
+            class="flex-shrink-0 bg-[#0066cc] text-white px-4 py-2 rounded-full text-sm font-medium transition-transform active:scale-95">
             확인
           </button>
         </div>
@@ -130,23 +130,23 @@ const AppState = (() => {
       <div class="mt-5 pt-4 border-t border-gray-100">
         <div class="flex gap-2 mb-4">
           <button onclick="submitReaction(${event.id}, 'correct')" id="btn-correct"
-            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ${myReaction === 'correct' ? 'bg-[#0172FE] border-[#0172FE] text-white' : 'border-gray-200 text-gray-600 hover:border-[#0172FE] hover:text-[#0172FE]'}">
-            👍 맞아요 <span id="cnt-correct" class="font-bold ml-1">-</span>
+            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full border text-sm font-medium transition-colors active:scale-95 ${myReaction === 'correct' ? 'bg-[#0066cc] border-[#0066cc] text-white' : 'border-[#e0e0e0] text-[#1d1d1f] hover:border-[#0066cc] hover:text-[#0066cc]'}">
+            👍 맞아요 <span id="cnt-correct" class="font-semibold ml-1">-</span>
           </button>
           <button onclick="submitReaction(${event.id}, 'incorrect')" id="btn-incorrect"
-            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ${myReaction === 'incorrect' ? 'bg-red-500 border-red-500 text-white' : 'border-gray-200 text-gray-600 hover:border-red-400 hover:text-red-500'}">
+            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full border text-sm font-medium transition-colors active:scale-95 ${myReaction === 'incorrect' ? 'bg-red-500 border-red-500 text-white' : 'border-[#e0e0e0] text-[#1d1d1f] hover:border-red-400 hover:text-red-500'}">
             👎 틀려요 <span id="cnt-incorrect" class="font-bold ml-1">-</span>
           </button>
         </div>
         <div class="space-y-2 mb-3">
           <input id="comment-input" type="text" placeholder="댓글을 남겨보세요 (최대 200자)" maxlength="200"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <div class="flex gap-2">
             <input id="comment-pw" type="password" placeholder="비밀번호 (삭제 시 필요)"
               onkeydown="if(event.key==='Enter') submitComment(${event.id})"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+              class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
             <button onclick="submitComment(${event.id})"
-              class="flex-shrink-0 bg-[#0172FE] text-white px-4 py-2 rounded-lg text-sm font-medium">
+              class="flex-shrink-0 bg-[#0066cc] text-white px-4 py-2 rounded-full text-sm font-medium transition-transform active:scale-95">
               등록
             </button>
           </div>
@@ -192,12 +192,12 @@ const AppState = (() => {
       </div>
       <div class="space-y-2">
         ${showing.map((ev, idx) => `
-          <div class="border border-gray-100 rounded-xl p-3 cursor-pointer hover:bg-[#e6f2ff] transition-colors"
+          <div class="border border-[#e0e0e0] rounded-[18px] p-3 cursor-pointer hover:bg-[#e8f0ff] transition-colors"
                onclick="AppState.selectGroupEvent(${idx})">
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-gray-900 truncate">${ev.store_name}</p>
-                <span class="inline-block text-xs bg-[#cce4ff] text-[#0172FE] px-1.5 py-0.5 rounded-full mt-0.5">
+                <p class="text-sm font-semibold text-[#1d1d1f] truncate">${ev.store_name}</p>
+                <span class="inline-block text-xs bg-[#d6eaff] text-[#0066cc] px-1.5 py-0.5 rounded-full mt-0.5">
                   ${ev.category_custom || ev.category_name}
                 </span>
               </div>
@@ -206,7 +206,7 @@ const AppState = (() => {
                 : ''}
             </div>
             ${ev.sale_items && ev.sale_items.length ? `
-              <p class="text-sm font-bold text-[#0172FE] mt-1.5">${ev.sale_items[0].discount_rate}${ev.sale_items.length > 1 ? ` 외 ${ev.sale_items.length - 1}건` : ''}</p>
+              <p class="text-sm font-bold text-[#0066cc] mt-1.5">${ev.sale_items[0].discount_rate}${ev.sale_items.length > 1 ? ` 외 ${ev.sale_items.length - 1}건` : ''}</p>
             ` : ''}
             <p class="text-xs text-gray-400 mt-1">${fmtDt(ev.start_date)} ~ ${fmtDt(ev.end_date)}</p>
           </div>
@@ -214,7 +214,7 @@ const AppState = (() => {
       </div>
       ${hasMore ? `
         <button onclick="AppState.loadMoreGroup()"
-          class="w-full mt-3 text-sm text-[#0172FE] font-medium py-2.5 border border-[#99c9ff] rounded-xl hover:bg-[#e6f2ff] transition-colors">
+          class="w-full mt-3 text-sm text-[#0066cc] font-medium py-2.5 border border-[#0066cc] rounded-full hover:bg-[#e8f0ff] transition-colors active:scale-95">
           더보기 (${currentGroup.length - end}개 더)
         </button>
       ` : ''}
@@ -260,14 +260,14 @@ function openReportModal() {
   document.getElementById('report-form-content').innerHTML = `
     <div class="space-y-2 mb-4">
       ${['잘못된 정보', '이미 종료된 행사', '허위/과장 광고', '기타'].map(r => `
-        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-[#e6f2ff]">
-          <input type="radio" name="report-reason" value="${r}" class="accent-[#0172FE]">
-          <span class="text-sm text-gray-700">${r}</span>
+        <label class="flex items-center gap-3 p-3 border border-[#e0e0e0] rounded-[11px] cursor-pointer hover:bg-[#e8f0ff]">
+          <input type="radio" name="report-reason" value="${r}" class="accent-[#0066cc]">
+          <span class="text-sm text-[#1d1d1f]">${r}</span>
         </label>
       `).join('')}
     </div>
     <button onclick="submitReport(${eventId})"
-      class="w-full bg-red-500 text-white py-3 rounded-xl font-bold text-sm">
+      class="w-full bg-red-500 text-white py-3 rounded-full font-semibold text-sm transition-transform active:scale-95">
       신고 접수
     </button>
   `;
@@ -398,7 +398,7 @@ function showEditForm(password) {
       <button type="button" data-edit-cat-id="${cat.id}"
         onclick="selectEditCategory(${cat.id}, ${cat.is_custom})"
         class="edit-cat-btn text-xs py-2 px-1 border rounded-lg transition-colors ${
-          active ? 'bg-[#0172FE] text-white border-[#0172FE]' : 'border-gray-300 text-gray-600'
+          active ? 'bg-[#0066cc] text-white border-[#0066cc]' : 'border-gray-300 text-gray-600'
         }">
         ${_esc(cat.name)}
       </button>
@@ -417,7 +417,7 @@ function showEditForm(password) {
       </button>
       <h3 class="text-base font-bold text-gray-900">개꿀 정보 수정</h3>
     </div>
-    <p class="text-xs text-gray-500 mb-4">🏪 ${event.store_name} &nbsp;·&nbsp; ${event.address}</p>
+    <p class="text-xs text-[#7a7a7a] mb-4">🏪 ${event.store_name} &nbsp;·&nbsp; ${event.address}</p>
 
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-2">카테고리 <span class="text-red-500">*</span></label>
@@ -425,54 +425,54 @@ function showEditForm(password) {
       <div id="edit-custom-cat-wrap" class="${showCustom ? '' : 'hidden'} mt-2">
         <input id="edit-custom-category" type="text" placeholder="카테고리 직접 입력"
           value="${_esc(decodedCustom)}"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+          class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
       </div>
     </div>
 
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">행사 기간 <span class="text-red-500">*</span></label>
+      <label class="block text-sm font-medium text-[#1d1d1f] mb-1">행사 기간 <span class="text-red-500">*</span></label>
       <div class="space-y-1">
         <div class="flex gap-2 items-center">
           <input id="edit-start-date" type="date" value="${_esc(dtDate(event.start_date))}"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <input id="edit-start-time" type="time" value="${_esc(dtTime(event.start_date))}"
-            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-28 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
         </div>
         <div class="flex gap-2 items-center">
-          <span class="text-gray-400 text-sm flex-shrink-0">~</span>
+          <span class="text-[#7a7a7a] text-sm flex-shrink-0">~</span>
           <input id="edit-end-date" type="date" value="${_esc(dtDate(event.end_date))}"
-            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <input id="edit-end-time" type="time" value="${_esc(dtTime(event.end_date))}"
-            class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-28 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
         </div>
       </div>
     </div>
 
     <div class="mb-5">
-      <label class="block text-sm font-medium text-gray-700 mb-2">세일 항목 <span class="text-red-500">*</span></label>
+      <label class="block text-sm font-medium text-[#1d1d1f] mb-2">세일 항목 <span class="text-red-500">*</span></label>
       <div id="edit-sale-items-container"></div>
       <button type="button" onclick="addEditItem()"
-        class="mt-2 text-sm text-[#0172FE] font-medium flex items-center gap-1">
+        class="mt-2 text-sm text-[#0066cc] font-medium flex items-center gap-1">
         <span class="text-lg leading-none">+</span> 항목 추가
       </button>
     </div>
 
     <div class="mb-5">
-      <label class="block text-sm font-medium text-gray-700 mb-1">기타 메모 <span class="text-xs text-gray-400">(선택)</span></label>
+      <label class="block text-sm font-medium text-[#1d1d1f] mb-1">기타 메모 <span class="text-xs text-[#7a7a7a]">(선택)</span></label>
       <textarea id="edit-memo" maxlength="500" rows="3"
         oninput="document.getElementById('edit-memo-counter').textContent = this.value.length"
-        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE] resize-none">${_esc(decodedMemo)}</textarea>
-      <p class="text-right text-xs text-gray-400 mt-0.5"><span id="edit-memo-counter">${decodedMemo.length}</span> / 500</p>
+        class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc] resize-none">${_esc(decodedMemo)}</textarea>
+      <p class="text-right text-xs text-[#7a7a7a] mt-0.5"><span id="edit-memo-counter">${decodedMemo.length}</span> / 500</p>
     </div>
 
-    <p id="edit-form-error" class="hidden text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-lg"></p>
+    <p id="edit-form-error" class="hidden text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-[8px]"></p>
 
     <button type="button" onclick="submitEdit()"
-      class="w-full bg-[#0172FE] text-white py-3 rounded-xl font-bold text-base mb-2">
+      class="w-full bg-[#0066cc] text-white py-3 rounded-full font-semibold text-base mb-2 transition-transform active:scale-95">
       저장하기
     </button>
     <button type="button" onclick="deleteEvent()"
-      class="w-full text-red-400 border border-red-300 py-3 rounded-xl font-medium text-base mb-6">
+      class="w-full text-red-400 border border-red-300 py-3 rounded-full font-medium text-base mb-6 transition-transform active:scale-95">
       삭제하기
     </button>
   `;
@@ -488,10 +488,10 @@ function renderEditSaleItemsContainer() {
       <div class="flex-1 space-y-1">
         <input type="text" placeholder="세일 내용 (예: 전 메뉴)" value="${_esc(item.description)}"
           oninput="updateEditItem(${i},'description',this.value)"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+          class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
         <input type="text" placeholder="할인율 (예: 30%, 1+1)" value="${_esc(item.discount_rate)}"
           oninput="updateEditItem(${i},'discount_rate',this.value)"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+          class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
       </div>
       ${_editSaleItems.length > 1 ? `
         <button type="button" onclick="removeEditItem(${i})"
@@ -521,9 +521,9 @@ function selectEditCategory(catId, isCustom) {
   _editCategoryId = catId;
   document.querySelectorAll('.edit-cat-btn').forEach(btn => {
     const active = parseInt(btn.dataset.editCatId) === catId;
-    btn.classList.toggle('bg-[#0172FE]',     active);
+    btn.classList.toggle('bg-[#0066cc]',     active);
     btn.classList.toggle('text-white',       active);
-    btn.classList.toggle('border-[#0172FE]', active);
+    btn.classList.toggle('border-[#0066cc]', active);
     btn.classList.toggle('border-gray-300',  !active);
     btn.classList.toggle('text-gray-600',    !active);
   });
@@ -651,22 +651,22 @@ async function loadComments(eventId) {
     list.innerHTML = `
       <p class="text-xs text-gray-400 mb-2">댓글 ${comments.length}개</p>
       ${comments.map(c => `
-        <div class="bg-gray-50 rounded-lg px-3 py-2" id="comment-row-${c.id}">
+        <div class="bg-[#f5f5f7] rounded-[8px] px-3 py-2" id="comment-row-${c.id}">
           <div class="flex items-start justify-between gap-2">
-            <p class="text-sm text-gray-700 break-words flex-1">${_escHtml(c.content)}</p>
+            <p class="text-sm text-[#1d1d1f] break-words flex-1">${_escHtml(c.content)}</p>
             <button onclick="toggleCommentDelete(${c.id})"
-              class="text-xs text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5 transition-colors">삭제</button>
+              class="text-xs text-[#7a7a7a] hover:text-red-400 flex-shrink-0 mt-0.5 transition-colors">삭제</button>
           </div>
-          <p class="text-xs text-gray-400 mt-1">${fmtDt(c.created_at)}</p>
+          <p class="text-xs text-[#7a7a7a] mt-1">${fmtDt(c.created_at)}</p>
           <div id="del-section-${c.id}" class="hidden mt-2">
             <div class="flex gap-2">
               <input type="password" id="del-pw-${c.id}" placeholder="비밀번호 입력"
                 onkeydown="if(event.key==='Enter') deleteComment(${c.id}, ${eventId})"
-                class="flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-red-400">
+                class="flex-1 border border-[#e0e0e0] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-red-400">
               <button onclick="deleteComment(${c.id}, ${eventId})"
-                class="flex-shrink-0 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium">확인</button>
+                class="flex-shrink-0 bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-medium active:scale-95">확인</button>
               <button onclick="toggleCommentDelete(${c.id})"
-                class="flex-shrink-0 text-gray-400 hover:text-gray-600 text-xs px-2 py-1.5">취소</button>
+                class="flex-shrink-0 text-[#7a7a7a] hover:text-[#1d1d1f] text-xs px-2 py-1.5">취소</button>
             </div>
             <p id="del-err-${c.id}" class="hidden text-red-500 text-xs mt-1"></p>
           </div>
@@ -684,9 +684,9 @@ function _applyReactionStyle(reaction) {
   const btnIncorrect = document.getElementById('btn-incorrect');
   if (!btnCorrect || !btnIncorrect) return;
 
-  const base      = 'flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ';
-  const inactive  = 'border-gray-200 text-gray-600';
-  btnCorrect.className   = base + (reaction === 'correct'   ? 'bg-[#0172FE] border-[#0172FE] text-white' : inactive + ' hover:border-[#0172FE] hover:text-[#0172FE]');
+  const base      = 'flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full border text-sm font-medium transition-colors active:scale-95 ';
+  const inactive  = 'border-[#e0e0e0] text-[#1d1d1f]';
+  btnCorrect.className   = base + (reaction === 'correct'   ? 'bg-[#0066cc] border-[#0066cc] text-white' : inactive + ' hover:border-[#0066cc] hover:text-[#0066cc]');
   btnIncorrect.className = base + (reaction === 'incorrect' ? 'bg-red-500 border-red-500 text-white'     : inactive + ' hover:border-red-400 hover:text-red-500');
 }
 

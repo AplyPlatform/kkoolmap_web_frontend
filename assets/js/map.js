@@ -20,7 +20,7 @@ const MapManager = (() => {
   // ── 아이콘 ───────────────────────────────────────────────
 
   function markerIcon(event) {
-    const color   = event.is_expired ? '#9ca3af' : '#0172FE';
+    const color   = event.is_expired ? '#9ca3af' : '#0066cc';
     const opacity = event.is_expired ? 0.55 : 1;
     const catName = (event.category_custom || event.category_name || '').slice(0, 6);
     const rate    = (event.sale_items && event.sale_items.length > 0)
@@ -42,7 +42,7 @@ const MapManager = (() => {
 
   // 동일 위치 다중 행사 마커 (할인율 + 카운트 배지)
   function locationGroupIcon(rep, count) {
-    const color   = rep.is_expired ? '#9ca3af' : (CATEGORY_COLORS[rep.category_id] || '#0172FE');
+    const color   = rep.is_expired ? '#9ca3af' : (CATEGORY_COLORS[rep.category_id] || '#0066cc');
     const opacity = rep.is_expired ? 0.55 : 1;
     const catName = (rep.category_custom || rep.category_name || '').slice(0, 6);
     const rate    = (rep.sale_items && rep.sale_items.length > 0)
@@ -65,7 +65,7 @@ const MapManager = (() => {
 
   // 광역 지리 클러스터 아이콘 (줌 아웃 시)
   function clusterIcon(count) {
-    const bg = count >= 100 ? '#ef4444' : count >= 10 ? '#f97316' : '#0172FE';
+    const bg = count >= 100 ? '#ef4444' : count >= 10 ? '#f97316' : '#0066cc';
     const sz = count >= 100 ? 52        : count >= 10 ? 44        : 36;
     const fs = count >= 100 ? 12        : 13;
     return {

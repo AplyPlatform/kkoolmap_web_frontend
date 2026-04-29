@@ -48,29 +48,34 @@
   <script type="text/javascript"
     src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=5harbulyju&submodules=geocoder"></script>
   <style>
-    html, body { height: 100%; margin: 0; overflow: hidden; }
+    html, body {
+      height: 100%; margin: 0; overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
     #map { width: 100%; height: 100%; }
-    .category-tab.active { background-color: #ffffff; color: #0172FE; border-color: #0172FE; }
-    .category-tab:not(.active) { background-color: #0172FE; color: #ffffff; border-color: #0172FE; }
+    .category-tab.active { background-color: #ffffff; color: #0066cc; border-color: #0066cc; }
+    .category-tab:not(.active) { background-color: #0066cc; color: #ffffff; border-color: #0066cc; }
     #category-bar::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-[#f5f5f7]">
 
   <!-- 지도 -->
   <div id="map"></div>
 
   <!-- 상단 바 (타이틀 + 카테고리 필터) -->
-  <div class="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-2 px-2 flex items-center gap-2">
-    <div class="flex-shrink-0 flex flex-col leading-none">      
-      <div class="flex items-center gap-1">
-        <span class="text-[11px] text-[#0172FE] font-medium tracking-tight">대한민국 개꿀템 모음</span> <img src="assets/imgs/favicon-96x96.png" alt="꿀맵" class="w-5 h-5">
-        <span class="font-extrabold text-[#0172FE] text-base tracking-tight">꿀맵</span>
+  <div class="fixed top-0 left-0 right-0 z-10 bg-black px-3 flex items-center gap-3" style="min-height:44px;">
+    <div class="flex-shrink-0 flex items-center gap-1.5">
+      <img src="assets/imgs/favicon-96x96.png" alt="꿀맵" class="w-5 h-5">
+      <div class="flex flex-col leading-none">
+        <span class="font-semibold text-white text-[15px] tracking-[-0.1px]">꿀맵</span>
+        <span class="text-[10px] text-white/50 tracking-tight leading-none mt-0.5">대한민국 개꿀템 모음</span>
       </div>
     </div>
-    <div id="category-bar" class="flex gap-2 overflow-x-auto">
+    <div id="category-bar" class="flex gap-2 overflow-x-auto py-1.5">
       <button data-id="" onclick="AppState.selectCategory(null)"
-        class="category-tab active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-[#0172FE] whitespace-nowrap">
+        class="category-tab active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-[#0066cc] whitespace-nowrap">
         전체
       </button>
       <!-- 카테고리 탭 동적 삽입 -->
@@ -80,9 +85,9 @@
   <!-- 행사 상세 팝업 -->
   <div id="detail-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/50" onclick="closeDetailPanel()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[80vh] overflow-y-auto">
+    <div class="relative bg-white rounded-[18px] shadow-lg border border-[#e0e0e0] w-full max-w-sm max-h-[80vh] overflow-y-auto">
       <button onclick="closeDetailPanel()"
-        class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 z-10">
+        class="absolute top-3 right-3 w-11 h-11 flex items-center justify-center rounded-full bg-[#d2d2d7] text-[#1d1d1f] z-10">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
@@ -94,11 +99,11 @@
   <!-- 행사 등록 팝업 -->
   <div id="submit-panel" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/50" onclick="closeSubmitPanel()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col">
-      <div class="flex items-center justify-between px-4 py-3 border-b flex-shrink-0">
-        <h2 class="text-lg font-bold">개꿀 정보 등록</h2>
+    <div class="relative bg-white rounded-[18px] shadow-lg border border-[#e0e0e0] w-full max-w-3xl max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-[#f0f0f0] flex-shrink-0">
+        <h2 class="text-[17px] font-semibold text-[#1d1d1f] tracking-[-0.374px]">개꿀 정보 등록</h2>
         <button onclick="closeSubmitPanel()"
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
+          class="w-11 h-11 flex items-center justify-center rounded-full bg-[#d2d2d7] text-[#1d1d1f]">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -110,15 +115,15 @@
 
   <!-- FAB 버튼 -->
   <button onclick="openSubmitPanel()"
-    class="fixed bottom-6 right-4 z-20 bg-[#0172FE] text-white px-5 py-3 rounded-full shadow-lg font-bold text-sm whitespace-nowrap">
+    class="fixed bottom-6 right-4 z-20 bg-[#0066cc] text-white px-5 py-3 rounded-full shadow-md font-semibold text-sm whitespace-nowrap transition-transform active:scale-95">
     🍯 개꿀 정보 등록하기
   </button>
 
   <!-- 신고 모달 -->
   <div id="report-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/50" onclick="closeReportModal()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 z-10">
-      <h3 class="font-bold text-base mb-3">신고 사유를 선택해주세요</h3>
+    <div class="relative bg-white rounded-[18px] shadow-lg border border-[#e0e0e0] w-full max-w-sm p-5 z-10">
+      <h3 class="font-semibold text-[17px] text-[#1d1d1f] tracking-[-0.374px] mb-3">신고 사유를 선택해주세요</h3>
       <div id="report-form-content"></div>
     </div>
   </div>

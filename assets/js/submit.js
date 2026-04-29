@@ -14,7 +14,7 @@ const SubmitManager = (() => {
     container.innerHTML = `
       <!-- 상점 검색 -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-[#1d1d1f] mb-1">
           상호 검색 <span class="text-red-500">*</span>
         </label>
 
@@ -22,7 +22,7 @@ const SubmitManager = (() => {
         <div class="flex gap-1 mb-2 bg-gray-100 p-1 rounded-lg">
           <button type="button" id="mode-naver-btn"
             onclick="SubmitManager.switchToNaverSearch()"
-            class="flex-1 text-xs py-1.5 rounded-md font-medium transition-all bg-white text-[#0172FE] shadow-sm">
+            class="flex-1 text-xs py-1.5 rounded-md font-medium transition-all bg-white text-[#0066cc] shadow-sm">
             상호명 검색
           </button>
           <button type="button" id="mode-direct-btn"
@@ -35,32 +35,32 @@ const SubmitManager = (() => {
         <!-- 상호명 검색 섹션 (기본) -->
         <div id="naver-search-section">
           <input id="store-search" type="text" placeholder="상점명을 검색하세요"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <div id="search-results"
             class="hidden mt-1 border border-gray-200 rounded-lg bg-white shadow-sm max-h-48 overflow-y-auto relative z-10"></div>
-          <div id="selected-place" class="hidden mt-2 p-2 bg-[#e6f2ff] rounded-lg text-xs text-gray-600"></div>
+          <div id="selected-place" class="hidden mt-2 p-2 bg-[#e8f0ff] rounded-lg text-xs text-gray-600"></div>
         </div>
 
         <!-- 주소 직접 입력 섹션 -->
         <div id="direct-input-section" class="hidden space-y-2">
           <input id="direct-store-name" type="text" placeholder="상호 또는 장소를 입력하세요"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <div class="flex gap-2">
             <input id="direct-address" type="text" readonly placeholder="주소 검색 버튼을 클릭하세요"
               onclick="SubmitManager.openKakaoPostcode()"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 cursor-pointer focus:outline-none">
+              class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm bg-gray-50 cursor-pointer focus:outline-none">
             <button type="button" onclick="SubmitManager.openKakaoPostcode()"
-              class="flex-shrink-0 bg-[#0172FE] text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+              class="flex-shrink-0 bg-[#0066cc] text-white px-3 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-transform active:scale-95">
               주소 검색
             </button>
           </div>
-          <div id="direct-selected-place" class="hidden p-2 bg-[#e6f2ff] rounded-lg text-xs text-gray-600"></div>
+          <div id="direct-selected-place" class="hidden p-2 bg-[#e8f0ff] rounded-lg text-xs text-gray-600"></div>
         </div>
       </div>
 
       <!-- 카테고리 -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label class="block text-sm font-medium text-[#1d1d1f] mb-2">
           카테고리 <span class="text-red-500">*</span>
         </label>
         <div class="grid grid-cols-4 gap-2">
@@ -68,74 +68,74 @@ const SubmitManager = (() => {
             <button type="button"
               data-cat-id="${cat.id}" data-is-custom="${cat.is_custom}"
               onclick="SubmitManager.selectCategory(${cat.id}, ${cat.is_custom})"
-              class="cat-btn text-xs py-2 px-1 border border-gray-300 rounded-lg text-gray-600 transition-colors">
+              class="cat-btn text-xs py-2 px-1 border border-[#e0e0e0] rounded-lg text-gray-600 transition-colors">
               ${cat.name}
             </button>
           `).join('')}
         </div>
         <div id="custom-cat-wrap" class="hidden mt-2">
           <input id="custom-category" type="text" placeholder="카테고리 직접 입력"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
         </div>
       </div>
 
       <!-- 행사 기간 -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-[#1d1d1f] mb-1">
           행사 기간 <span class="text-red-500">*</span>
         </label>
         <div class="space-y-1">
           <div class="flex gap-2 items-center">
             <input id="start-date" type="date"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+              class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
             <input id="start-time" type="time" value="00:00"
-              class="w-35 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+              class="w-35 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           </div>
           <div class="flex gap-2 items-center">
             <span class="text-gray-400 text-sm flex-shrink-0">~</span>
             <input id="end-date" type="date"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+              class="flex-1 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
             <input id="end-time" type="time" value="23:59"
-              class="w-35 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+              class="w-35 border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           </div>
         </div>
       </div>
 
       <!-- 세일 항목 -->
       <div class="mb-5">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label class="block text-sm font-medium text-[#1d1d1f] mb-2">
           세일 항목 <span class="text-red-500">*</span>
         </label>
         <div id="sale-items-container"></div>
         <button type="button" onclick="SubmitManager.addSaleItem()"
-          class="mt-2 text-sm text-[#0172FE] font-medium flex items-center gap-1">
+          class="mt-2 text-sm text-[#0066cc] font-medium flex items-center gap-1">
           <span class="text-lg leading-none">+</span> 항목 추가
         </button>
       </div>
 
       <!-- 기타 메모 -->
       <div class="mb-5">
-        <label class="block text-sm font-medium text-gray-700 mb-1">기타 메모 <span class="text-xs text-gray-400">(선택)</span></label>
+        <label class="block text-sm font-medium text-[#1d1d1f] mb-1">기타 메모 <span class="text-xs text-[#7a7a7a]">(선택)</span></label>
         <textarea id="event-memo" maxlength="500" rows="3" placeholder="추가 안내사항이 있으면 입력해주세요 (최대 500자)"
           oninput="document.getElementById('memo-counter').textContent = this.value.length"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE] resize-none"></textarea>
-        <p class="text-right text-xs text-gray-400 mt-0.5"><span id="memo-counter">0</span> / 500</p>
+          class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc] resize-none"></textarea>
+        <p class="text-right text-xs text-[#7a7a7a] mt-0.5"><span id="memo-counter">0</span> / 500</p>
       </div>
 
       <!-- 수정 비밀번호 -->
       <div class="mb-5">
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-[#1d1d1f] mb-1">
           수정 비밀번호 <span class="text-red-500">*</span>
         </label>
         <input id="reg-password" type="password" placeholder="나중에 수정 시 사용할 비밀번호"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
-        <p class="text-xs text-gray-400 mt-1">⚠ 비밀번호를 잊어버리면 수정할 수 없습니다</p>
+          class="w-full border border-[#e0e0e0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
+        <p class="text-xs text-[#7a7a7a] mt-1">⚠ 비밀번호를 잊어버리면 수정할 수 없습니다</p>
       </div>
 
       <p id="form-error" class="hidden text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-lg"></p>
 
       <button type="button" onclick="SubmitManager.submit()"
-        class="w-full bg-[#0172FE] text-white py-3 rounded-xl font-bold text-base mb-6">
+        class="w-full bg-[#0066cc] text-white py-3 rounded-full font-semibold text-base mb-6 transition-transform active:scale-95">
         등록 하기
       </button>
     `;
@@ -153,8 +153,8 @@ const SubmitManager = (() => {
     document.getElementById('direct-input-section')?.classList.add('hidden');
     const nb = document.getElementById('mode-naver-btn');
     const db = document.getElementById('mode-direct-btn');
-    if (nb) { nb.classList.add('bg-white', 'text-[#0172FE]', 'shadow-sm'); nb.classList.remove('text-gray-500'); }
-    if (db) { db.classList.remove('bg-white', 'text-[#0172FE]', 'shadow-sm'); db.classList.add('text-gray-500'); }
+    if (nb) { nb.classList.add('bg-white', 'text-[#0066cc]', 'shadow-sm'); nb.classList.remove('text-gray-500'); }
+    if (db) { db.classList.remove('bg-white', 'text-[#0066cc]', 'shadow-sm'); db.classList.add('text-gray-500'); }
   }
 
   function switchToDirectInput() {
@@ -165,8 +165,8 @@ const SubmitManager = (() => {
     document.getElementById('direct-store-name')?.focus();
     const nb = document.getElementById('mode-naver-btn');
     const db = document.getElementById('mode-direct-btn');
-    if (nb) { nb.classList.remove('bg-white', 'text-[#0172FE]', 'shadow-sm'); nb.classList.add('text-gray-500'); }
-    if (db) { db.classList.add('bg-white', 'text-[#0172FE]', 'shadow-sm'); db.classList.remove('text-gray-500'); }
+    if (nb) { nb.classList.remove('bg-white', 'text-[#0066cc]', 'shadow-sm'); nb.classList.add('text-gray-500'); }
+    if (db) { db.classList.add('bg-white', 'text-[#0066cc]', 'shadow-sm'); db.classList.remove('text-gray-500'); }
   }
 
   // ── 카카오 주소 검색 ───────────────────────────────────────
@@ -217,10 +217,10 @@ const SubmitManager = (() => {
         <div class="flex-1 space-y-1">
           <input type="text" placeholder="행사 내용 (예: 전 메뉴)" value="${escapeHtml(item.description)}"
             oninput="SubmitManager.updateItem(${i},'description',this.value)"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-full border border-[#e0e0e0] rounded-[8px] px-3 py-2 text-sm text-[#1d1d1f] focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
           <input type="text" placeholder="할인율 (예: 30%, 1+1)" value="${escapeHtml(item.discount_rate)}"
             oninput="SubmitManager.updateItem(${i},'discount_rate',this.value)"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0172FE]">
+            class="w-full border border-[#e0e0e0] rounded-[8px] px-3 py-2 text-sm text-[#1d1d1f] focus:outline-none focus:ring-2 focus:ring-[#0066cc]">
         </div>
         ${saleItems.length > 1 ? `
           <button type="button" onclick="SubmitManager.removeSaleItem(${i})"
@@ -258,10 +258,10 @@ const SubmitManager = (() => {
     selectedCategoryId = catId;
     document.querySelectorAll('.cat-btn').forEach(btn => {
       const active = parseInt(btn.dataset.catId) === catId;
-      btn.classList.toggle('bg-[#0172FE]',    active);
+      btn.classList.toggle('bg-[#0066cc]',    active);
       btn.classList.toggle('text-white',      active);
-      btn.classList.toggle('border-[#0172FE]', active);
-      btn.classList.toggle('border-gray-300', !active);
+      btn.classList.toggle('border-[#0066cc]', active);
+      btn.classList.toggle('border-[#e0e0e0]', !active);
       btn.classList.toggle('text-gray-600',   !active);
     });
     document.getElementById('custom-cat-wrap')?.classList.toggle('hidden', !parseInt(isCustom));
@@ -292,7 +292,7 @@ const SubmitManager = (() => {
       el.classList.remove('hidden');
       el.innerHTML = json.data.map(item => `
         <button type="button" onclick='SubmitManager.selectPlace(${JSON.stringify(item)})'
-          class="w-full text-left px-3 py-2.5 hover:bg-[#e6f2ff] border-b border-gray-100 last:border-0">
+          class="w-full text-left px-3 py-2.5 hover:bg-[#e8f0ff] border-b border-[#f0f0f0] last:border-0">
           <p class="text-sm font-medium text-gray-800">${item.title}</p>
           <p class="text-xs text-gray-500 mt-0.5">${item.roadAddress || item.address}</p>
         </button>
